@@ -57,9 +57,17 @@ class Parser {
         if (matchIdentifier(IDENTIFIER)) {
             return varDeclaration();
         }
+        if (match(FLOAT)) {
+            return castStatement();
+        }
         return expressionStatement();
     }
 
+    private Stmt castStatement() {
+        Expr value = expression();
+        consume(SEMICOLON, "Expect ';' after value.");
+        return new Stmt.Cast(value);
+    }
     
     private boolean matchIdentifier(TokenType... types) {
         for (TokenType type : types) {

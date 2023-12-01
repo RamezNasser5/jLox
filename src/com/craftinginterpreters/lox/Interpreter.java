@@ -35,6 +35,15 @@ class Interpreter implements Expr.Visitor<Object>,
         return null;
     }
 
+    @Override
+    public Void visitCastStmt(Stmt.Cast stmt) {
+        Object value = evaluate(stmt.expression);
+        Token name = ((Expr.Variable)(stmt.expression)).name;
+        double doublObject = Double.parseDouble(value.toString());
+        environment.assign(name, doublObject);
+        return null;
+    }
+
     private Object evaluate(Expr expr) {
         return expr.accept(this);
     }

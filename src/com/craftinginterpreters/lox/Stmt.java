@@ -9,6 +9,7 @@ abstract class Stmt {
     R visitExpressionStmt(Expression stmt);
     R visitPrintStmt(Print stmt);
     R visitVarStmt(Var stmt);
+    R visitCastStmt(Cast stmt);
   }
 
   // Nested Stmt classes here...
@@ -26,6 +27,21 @@ abstract class Stmt {
     final List<Stmt> statements;
   }
 //< stmt-block
+
+static class Cast  extends Stmt{
+  Cast(Expr expression) {
+    this.expression = expression;
+  }
+
+  @Override
+  <R> R accept(Visitor<R> visitor) {
+    return visitor.visitCastStmt(this);
+  }
+
+  Expr expression;
+  
+}
+
 //> stmt-expression
   static class Expression extends Stmt {
     Expression(Expr expression) {
