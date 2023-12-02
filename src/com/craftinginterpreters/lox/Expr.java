@@ -1,35 +1,38 @@
 //> Appendix II expr
 package com.craftinginterpreters.lox;
 
-
 abstract class Expr {
   interface Visitor<R> {
     R visitAssignExpr(Assign expr);
+
     R visitBinaryExpr(Binary expr);
+
     R visitGroupingExpr(Grouping expr);
+
     R visitLiteralExpr(Literal expr);
+
     R visitUnaryExpr(Unary expr);
+
     R visitVariableExpr(Variable expr);
   }
 
   // Nested Expr classes here...
-//> expr-assign
+  // > expr-assign
   static class Assign extends Expr {
-    Assign(Token name, Expr value) {
-      this.name = name;
-      this.value = value;
-    }
-
+     Assign(Expr name, Expr value) {
+     this.name = name;
+     this.value = value;
+     }
     @Override
-    <R> R accept(Visitor<R> visitor) {
-      return visitor.visitAssignExpr(this);
-    }
+     <R> R accept(Visitor<R> visitor) {
+     return visitor.visitAssignExpr(this);
+     }
+     final Expr name;
+     final Expr value;
+     }
 
-    final Token name;
-    final Expr value;
-  }
-//< expr-assign
-//> expr-binary
+  // < expr-assign
+  // > expr-binary
   static class Binary extends Expr {
     Binary(Expr left, Token operator, Expr right) {
       this.left = left;
@@ -46,8 +49,9 @@ abstract class Expr {
     final Token operator;
     final Expr right;
   }
-//< expr-binary
-//> expr-grouping
+
+  // < expr-binary
+  // > expr-grouping
   static class Grouping extends Expr {
     Grouping(Expr expression) {
       this.expression = expression;
@@ -60,8 +64,9 @@ abstract class Expr {
 
     final Expr expression;
   }
-//< expr-grouping
-//> expr-literal
+
+  // < expr-grouping
+  // > expr-literal
   static class Literal extends Expr {
     Literal(Object value) {
       this.value = value;
@@ -74,8 +79,9 @@ abstract class Expr {
 
     final Object value;
   }
-//< expr-literal
-//> expr-unary
+
+  // < expr-literal
+  // > expr-unary
   static class Unary extends Expr {
     Unary(Token operator, Expr right) {
       this.operator = operator;
@@ -90,8 +96,9 @@ abstract class Expr {
     final Token operator;
     final Expr right;
   }
-//< expr-unary
-//> expr-variable
+
+  // < expr-unary
+  // > expr-variable
   static class Variable extends Expr {
     Variable(Token name) {
       this.name = name;
@@ -104,8 +111,8 @@ abstract class Expr {
 
     final Token name;
   }
-//< expr-variable
+  // < expr-variable
 
   abstract <R> R accept(Visitor<R> visitor);
 }
-//< Appendix II expr
+// < Appendix II expr

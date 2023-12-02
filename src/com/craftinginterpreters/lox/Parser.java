@@ -68,7 +68,7 @@ class Parser {
         consume(SEMICOLON, "Expect ';' after value.");
         return new Stmt.Cast(value);
     }
-    
+
     private boolean matchIdentifier(TokenType... types) {
         for (TokenType type : types) {
             if (check(type)) {
@@ -99,9 +99,8 @@ class Parser {
         if (match(EQUAL)) {
             Token equals = previous();
             Expr value = assignment();
-            if (expr instanceof Expr.Variable) {
-                Token name = ((Expr.Variable) expr).name;
-                return new Expr.Assign(name, value);
+            if (expr instanceof Expr.Variable || expr instanceof Expr.Binary) {
+                return new Expr.Assign(expr, value);
             }
             error(equals, "Invalid assignment target.");
         }
@@ -189,7 +188,7 @@ class Parser {
         if (match(IDENTIFIER)) {
             return new Expr.Variable(previous());
         }
-        
+
         throw error(peek(), "Expect expression.");
     }
 
@@ -242,8 +241,6 @@ class Parser {
     private Token peek() {
         return tokens.get(current);
     }
-
-    
 
     private Token previous() {
         return tokens.get(current - 1);

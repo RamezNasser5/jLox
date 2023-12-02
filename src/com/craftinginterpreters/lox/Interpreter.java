@@ -38,7 +38,7 @@ class Interpreter implements Expr.Visitor<Object>,
     @Override
     public Void visitCastStmt(Stmt.Cast stmt) {
         Object value = evaluate(stmt.expression);
-        Token name = ((Expr.Variable)(stmt.expression)).name;
+        Token name = ((Expr.Variable) (stmt.expression)).name;
         double doublObject = Double.parseDouble(value.toString());
         environment.assign(name, doublObject);
         return null;
@@ -294,7 +294,18 @@ class Interpreter implements Expr.Visitor<Object>,
     @Override
     public Object visitAssignExpr(Expr.Assign expr) {
         Object value = evaluate(expr.value);
-        environment.assign(expr.name, value);
+        if (expr.name instanceof Expr.Variable) {
+            environment.assign(((Expr.Variable) (expr.name)).name, value);
+        }
+        if (expr.name instanceof Expr.Binary) {
+            boolean b = isTruthy(evaluate((Expr.Binary) expr.name));
+            if (b) {
+                Token t = ((Expr.Variable) ((Expr.Binary) (expr.name)).left).name;
+                environment.assign(t, value);
+            }
+        } else
+            throw new RuntimeError(((Expr.Binary) (expr.name)).operator,
+                    "Operator must be < or >.");
         return value;
     }
 
