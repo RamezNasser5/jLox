@@ -12,6 +12,7 @@ abstract class Stmt {
     R visitCastFloatStmt(CastFloat stmt);
     R visitCastStringStmt(CastString stmt);
     R visitIfStatement(If stmt);
+    R visitTernaryStatement(Ternary stmt);
   }
 
   static class If extends Stmt {
@@ -29,6 +30,23 @@ abstract class Stmt {
     final Stmt thenBranch;
     final Stmt elseBranch;
     
+  }
+
+  static class Ternary extends Stmt {
+    Ternary(Expr condition,Stmt thenBranch,Stmt elseBranch) {
+      this.condition = condition;
+      this.thenBranch = thenBranch;
+      this.elseBranch = elseBranch;
+    }
+    @Override
+    <R> R accept(Visitor<R> visitor) {
+        
+        return visitor.visitTernaryStatement(this);
+    }
+    final Expr condition;
+    final Stmt thenBranch;
+    final Stmt elseBranch;
+
   }
 
   // Nested Stmt classes here...
@@ -121,5 +139,7 @@ static class CastFloat  extends Stmt{
 //< stmt-var
 
   abstract <R> R accept(Visitor<R> visitor);
+
+  
 }
 //< Appendix II stmt

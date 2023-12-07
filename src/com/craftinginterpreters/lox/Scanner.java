@@ -83,7 +83,10 @@ class Scanner {
           addToken(SLASH);
         }
         break;
-
+      case '?': addToken(QUESTION_MARK);
+      break; 
+      case ':': addToken(COLLON);
+      break; 
       case ' ':
       case '\r':
       case '\t':

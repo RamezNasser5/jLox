@@ -69,19 +69,6 @@ class Parser {
         return expressionStatement();
     }
 
-    private Stmt ifStatememnt() {
-        consume(LEFT_PAREN, "Expect '(' after 'if'.");
-        Expr condition = expression();
-        consume(RIGHT_PAREN, "Expect ')' after if condition.");
-        Stmt thenPranch = statement();
-        Stmt elsePranch = null;
-        if (match(ELSE)) {
-            elsePranch = statement();
-        }
-        return new Stmt.If(condition,thenPranch,elsePranch);
-
-    }
-
     private Stmt castStringStatement() {
         Expr value = expression();
         consume(SEMICOLON, "Expect ';' after value.");
@@ -109,10 +96,35 @@ class Parser {
         return new Stmt.Print(value);
     }
 
+    private Stmt ifStatememnt() {
+        consume(LEFT_PAREN, "Expect '(' after 'if'.");
+        Expr condition = expression();
+        consume(RIGHT_PAREN, "Expect ')' after if condition.");
+        Stmt thenPranch = statement();
+        Stmt elsePranch = null;
+        if (match(ELSE)) {
+            elsePranch = statement();
+        }
+        return new Stmt.If(condition, thenPranch, elsePranch);
+
+    }
+
     private Stmt expressionStatement() {
         Expr expr = expression();
-        consume(SEMICOLON, "Expect ';' after expression.");
-        return new Stmt.Expression(expr);
+        Stmt stmt1 = null;
+        Stmt stmt2 = null;
+        if (match(QUESTION_MARK)) {
+            stmt1 = statement();
+            if (match(COLLON)) {
+                stmt2 = statement();
+            }
+            return new Stmt.Ternary(expr, stmt1, stmt2);
+
+        } else {
+            consume(SEMICOLON, "Expect ';' after expression.");
+            return new Stmt.Expression(expr);
+        }
+
     }
 
     private Expr expression() {

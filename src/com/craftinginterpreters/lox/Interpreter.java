@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.craftinginterpreters.lox.Stmt.CastString;
 import com.craftinginterpreters.lox.Stmt.If;
+import com.craftinginterpreters.lox.Stmt.Ternary;
 
 class Interpreter implements Expr.Visitor<Object>,
         Stmt.Visitor<Void> {
@@ -35,10 +36,20 @@ class Interpreter implements Expr.Visitor<Object>,
     public Void visitIfStatement(If stmt) {
         if (isTruthy(evaluate(stmt.condition))) {
             execute(stmt.thenBranch);
-            } else if (stmt.elseBranch != null) {
+        } else if (stmt.elseBranch != null) {
             execute(stmt.elseBranch);
-            }
-            return null;
+        }
+        return null;
+    }
+
+    @Override
+    public Void visitTernaryStatement(Ternary stmt) {
+        if (isTruthy(evaluate(stmt.condition))) {
+            execute(stmt.thenBranch);
+        } else if (stmt.elseBranch != null) {
+            execute(stmt.elseBranch);
+        }
+        return null;
     }
 
     @Override
@@ -54,12 +65,11 @@ class Interpreter implements Expr.Visitor<Object>,
         Token name = ((Expr.Variable) (stmt.expression)).name;
         String stringObject = "";
         if (value.toString().endsWith(".0")) {
-            stringObject = value.toString().substring(0, value.toString().length()-2);
-        }
-        else {
+            stringObject = value.toString().substring(0, value.toString().length() - 2);
+        } else {
             stringObject = value.toString();
         }
-        
+
         environment.assign(name, stringObject);
         return null;
     }
@@ -418,7 +428,4 @@ class Interpreter implements Expr.Visitor<Object>,
         return object.toString();
     }
 
-    
-
-    
 }
