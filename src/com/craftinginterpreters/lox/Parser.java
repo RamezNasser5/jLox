@@ -58,15 +58,24 @@ class Parser {
             return varDeclaration();
         }
         if (match(FLOAT)) {
-            return castStatement();
+            return castFloatStatement();
+        }
+        if (match(STRING)) {
+            return castStringStatement();
         }
         return expressionStatement();
     }
 
-    private Stmt castStatement() {
+    private Stmt castStringStatement() {
         Expr value = expression();
         consume(SEMICOLON, "Expect ';' after value.");
-        return new Stmt.Cast(value);
+        return new Stmt.CastString(value);
+    }
+
+    private Stmt castFloatStatement() {
+        Expr value = expression();
+        consume(SEMICOLON, "Expect ';' after value.");
+        return new Stmt.CastFloat(value);
     }
 
     private boolean matchIdentifier(TokenType... types) {

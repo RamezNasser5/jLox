@@ -2,6 +2,8 @@ package com.craftinginterpreters.lox;
 
 import java.util.List;
 
+import com.craftinginterpreters.lox.Stmt.CastString;
+
 class Interpreter implements Expr.Visitor<Object>,
         Stmt.Visitor<Void> {
 
@@ -36,7 +38,23 @@ class Interpreter implements Expr.Visitor<Object>,
     }
 
     @Override
-    public Void visitCastStmt(Stmt.Cast stmt) {
+    public Void visitCastStringStmt(CastString stmt) {
+        Object value = evaluate(stmt.expression);
+        Token name = ((Expr.Variable) (stmt.expression)).name;
+        String stringObject = "";
+        if (value.toString().endsWith(".0")) {
+            stringObject = value.toString().substring(0, value.toString().length()-2);
+        }
+        else {
+            stringObject = value.toString();
+        }
+        
+        environment.assign(name, stringObject);
+        return null;
+    }
+
+    @Override
+    public Void visitCastFloatStmt(Stmt.CastFloat stmt) {
         Object value = evaluate(stmt.expression);
         Token name = ((Expr.Variable) (stmt.expression)).name;
         double doublObject = Double.parseDouble(value.toString());
@@ -388,4 +406,6 @@ class Interpreter implements Expr.Visitor<Object>,
 
         return object.toString();
     }
+
+    
 }
