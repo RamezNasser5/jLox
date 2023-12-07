@@ -3,6 +3,7 @@ package com.craftinginterpreters.lox;
 import java.util.List;
 
 import com.craftinginterpreters.lox.Stmt.CastString;
+import com.craftinginterpreters.lox.Stmt.If;
 
 class Interpreter implements Expr.Visitor<Object>,
         Stmt.Visitor<Void> {
@@ -28,6 +29,16 @@ class Interpreter implements Expr.Visitor<Object>,
         Object value = evaluate(stmt.expression);
         System.out.println(stringify(value));
         return null;
+    }
+
+    @Override
+    public Void visitIfStatement(If stmt) {
+        if (isTruthy(evaluate(stmt.condition))) {
+            execute(stmt.thenBranch);
+            } else if (stmt.elseBranch != null) {
+            execute(stmt.elseBranch);
+            }
+            return null;
     }
 
     @Override
@@ -406,6 +417,8 @@ class Interpreter implements Expr.Visitor<Object>,
 
         return object.toString();
     }
+
+    
 
     
 }

@@ -63,7 +63,23 @@ class Parser {
         if (match(STRING)) {
             return castStringStatement();
         }
+        if (match(IF)) {
+            return ifStatememnt();
+        }
         return expressionStatement();
+    }
+
+    private Stmt ifStatememnt() {
+        consume(LEFT_PAREN, "Expect '(' after 'if'.");
+        Expr condition = expression();
+        consume(RIGHT_PAREN, "Expect ')' after if condition.");
+        Stmt thenPranch = statement();
+        Stmt elsePranch = null;
+        if (match(ELSE)) {
+            elsePranch = statement();
+        }
+        return new Stmt.If(condition,thenPranch,elsePranch);
+
     }
 
     private Stmt castStringStatement() {

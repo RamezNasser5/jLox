@@ -11,6 +11,24 @@ abstract class Stmt {
     R visitVarStmt(Var stmt);
     R visitCastFloatStmt(CastFloat stmt);
     R visitCastStringStmt(CastString stmt);
+    R visitIfStatement(If stmt);
+  }
+
+  static class If extends Stmt {
+    If(Expr condition,Stmt thenBranch,Stmt elseBranch) {
+      this.condition = condition;
+      this.thenBranch = thenBranch;
+      this.elseBranch = elseBranch;
+    }
+    @Override
+    <R> R accept(Visitor<R> visitor) {
+        
+        return visitor.visitIfStatement(this);
+    }
+    final Expr condition;
+    final Stmt thenBranch;
+    final Stmt elseBranch;
+    
   }
 
   // Nested Stmt classes here...
