@@ -73,8 +73,22 @@ class Parser {
         if (match(WHILE)) {
             return whileStatement();
         }
+        if (match(DO)) {
+            return doStatement();
+        }
         
         return expressionStatement();
+    }
+
+    private Stmt doStatement() {
+        
+        Stmt body = statement();
+        
+        Expr condition = null;
+        if (match(WHILE)) {
+            condition = expression();
+        }
+        return new Stmt.Do(condition,body);
     }
 
     private Stmt forStatement() {

@@ -14,6 +14,23 @@ abstract class Stmt {
     R visitIfStatement(If stmt);
     R visitTernaryStatement(Ternary stmt);
     R visitWhileStmt(While stmt);
+    R visitDoStatement(Do stmt);
+  }
+
+  static class Do extends Stmt {
+    Do(Expr condition, Stmt body) {
+      this.condition = condition;
+      this.body = body;
+    }
+
+    @Override
+    <R> R accept(Visitor<R> visitor) {
+      return visitor.visitDoStatement(this);
+    }
+
+    final Expr condition;
+    final Stmt body;
+    
   }
 
   static class While extends Stmt {

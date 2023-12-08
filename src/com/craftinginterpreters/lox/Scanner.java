@@ -30,6 +30,7 @@ class Scanner {
     keywords.put("while",  WHILE);
     keywords.put("float",  FLOAT);
     keywords.put("string",  STRING);
+    keywords.put("do",  DO);
   }
   private final String source;
   private final List<Token> tokens = new ArrayList<>();

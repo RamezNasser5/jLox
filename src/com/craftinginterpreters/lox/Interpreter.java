@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.craftinginterpreters.lox.Expr.Logical;
 import com.craftinginterpreters.lox.Stmt.CastString;
+import com.craftinginterpreters.lox.Stmt.Do;
 import com.craftinginterpreters.lox.Stmt.If;
 import com.craftinginterpreters.lox.Stmt.Ternary;
 
@@ -433,6 +434,14 @@ class Interpreter implements Expr.Visitor<Object>,
 
     @Override
     public Void visitWhileStmt(Stmt.While stmt) {
+        while (isTruthy(evaluate(stmt.condition))) {
+            execute(stmt.body);
+        }
+        return null;
+    }
+
+    @Override
+    public Void visitDoStatement(Do stmt) {
         while (isTruthy(evaluate(stmt.condition))) {
             execute(stmt.body);
         }
