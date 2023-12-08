@@ -66,7 +66,18 @@ class Parser {
         if (match(IF)) {
             return ifStatememnt();
         }
+        if (match(WHILE)) {
+            return whileStatement();
+        }
         return expressionStatement();
+    }
+
+    private Stmt whileStatement() {
+        consume(LEFT_PAREN, null);
+        Expr condition = expression();
+        consume(RIGHT_PAREN, null);
+        Stmt body = statement();
+        return new Stmt.While(condition,body);
     }
 
     private Stmt castStringStatement() {

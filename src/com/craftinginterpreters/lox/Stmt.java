@@ -13,6 +13,22 @@ abstract class Stmt {
     R visitCastStringStmt(CastString stmt);
     R visitIfStatement(If stmt);
     R visitTernaryStatement(Ternary stmt);
+    R visitWhileStmt(While stmt);
+  }
+
+  static class While extends Stmt {
+    While(Expr condition, Stmt body) {
+      this.condition = condition;
+      this.body = body;
+    }
+
+    @Override
+    <R> R accept(Visitor<R> visitor) {
+      return visitor.visitWhileStmt(this);
+    }
+
+    final Expr condition;
+    final Stmt body;
   }
 
   static class If extends Stmt {

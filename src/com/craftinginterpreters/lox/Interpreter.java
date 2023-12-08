@@ -6,6 +6,7 @@ import com.craftinginterpreters.lox.Expr.Logical;
 import com.craftinginterpreters.lox.Stmt.CastString;
 import com.craftinginterpreters.lox.Stmt.If;
 import com.craftinginterpreters.lox.Stmt.Ternary;
+import com.craftinginterpreters.lox.Stmt.While;
 
 class Interpreter implements Expr.Visitor<Object>,
         Stmt.Visitor<Void> {
@@ -440,6 +441,14 @@ class Interpreter implements Expr.Visitor<Object>,
                 return left;
         }
         return evaluate(expr.right);
+    }
+
+    @Override
+    public Void visitWhileStmt(While stmt) {
+        if (isTruthy(evaluate(stmt.condition))) {
+            execute(stmt.body);
+        } 
+        return null;
     }
 
 }
