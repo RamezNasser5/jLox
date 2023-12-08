@@ -21,17 +21,19 @@ abstract class Expr {
   // Nested Expr classes here...
   // > expr-assign
   static class Assign extends Expr {
-     Assign(Expr name, Expr value) {
-     this.name = name;
-     this.value = value;
-     }
+    Assign(Token name, Expr value) {
+      this.name = name;
+      this.value = value;
+    }
+
     @Override
-     <R> R accept(Visitor<R> visitor) {
-     return visitor.visitAssignExpr(this);
-     }
-     final Expr name;
-     final Expr value;
-     }
+    <R> R accept(Visitor<R> visitor) {
+      return visitor.visitAssignExpr(this);
+    }
+
+    final Token name;
+    final Expr value;
+  }
 
   // < expr-assign
   // > expr-binary

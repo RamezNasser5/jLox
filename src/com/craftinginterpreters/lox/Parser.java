@@ -2,6 +2,7 @@ package com.craftinginterpreters.lox;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import static com.craftinginterpreters.lox.TokenType.*;
 
@@ -48,6 +49,9 @@ class Parser {
     }
 
     private Stmt statement() {
+        if (match(FOR)) {
+            return forStatement();
+        }
         if (match(PRINT)) {
             return printStatement();
         }
@@ -69,7 +73,51 @@ class Parser {
         if (match(WHILE)) {
             return whileStatement();
         }
+        
         return expressionStatement();
+    }
+
+    private Stmt forStatement() {
+        consume(LEFT_PAREN, "Expect '(' after 'for'.");
+
+        Stmt initializer;
+        if (match(SEMICOLON)) {
+            initializer = null;
+        } else if (match(VAR)) {
+            initializer = varDeclaration();
+        } else {
+            initializer = expressionStatement();
+        }
+
+        Expr condition = null;
+        if (!check(SEMICOLON)) {
+            condition = expression();
+        }
+        consume(SEMICOLON, "Expect ';' after loop condition.");
+
+        Expr increment = null;
+        if (!check(RIGHT_PAREN)) {
+            increment = expression();
+        }
+        consume(RIGHT_PAREN, "Expect ')' after for clauses.");
+        Stmt body = statement();
+
+        if (increment != null) {
+            body = new Stmt.Block(
+                    Arrays.asList(
+                            body,
+                            new Stmt.Expression(increment)));
+        }
+
+        if (condition == null)
+            condition = new Expr.Literal(true);
+        body = new Stmt.While(condition, body);
+
+        if (initializer != null) {
+            body = new Stmt.Block(Arrays.asList(initializer, body));
+        }
+
+        return body;
     }
 
     private Stmt whileStatement() {
@@ -77,7 +125,7 @@ class Parser {
         Expr condition = expression();
         consume(RIGHT_PAREN, null);
         Stmt body = statement();
-        return new Stmt.While(condition,body);
+        return new Stmt.While(condition, body);
     }
 
     private Stmt castStringStatement() {
@@ -144,23 +192,28 @@ class Parser {
 
     private Expr assignment() {
         Expr expr = or();
+    
         if (match(EQUAL)) {
-            Token equals = previous();
-            Expr value = assignment();
-            if (expr instanceof Expr.Variable || expr instanceof Expr.Binary) {
-                return new Expr.Assign(expr, value);
-            }
-            error(equals, "Invalid assignment target.");
+          Token equals = previous();
+          Expr value = assignment();
+    
+          if (expr instanceof Expr.Variable) {
+            Token name = ((Expr.Variable)expr).name;
+            return new Expr.Assign(name, value);
+          }
+    
+          error(equals, "Invalid assignment target."); // [no-throw]
         }
+    
         return expr;
-    }
+      }
 
     private Expr or() {
         Expr expr = and();
         if (match(OR)) {
             Token operator = previous();
             Expr right = and();
-            expr = new Expr.Logical(expr,operator,right);
+            expr = new Expr.Logical(expr, operator, right);
         }
         return expr;
     }
@@ -170,7 +223,7 @@ class Parser {
         if (match(AND)) {
             Token operator = previous();
             Expr right = equality();
-            expr = new Expr.Logical(expr,operator,right);
+            expr = new Expr.Logical(expr, operator, right);
         }
         return expr;
     }

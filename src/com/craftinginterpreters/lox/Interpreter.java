@@ -6,7 +6,6 @@ import com.craftinginterpreters.lox.Expr.Logical;
 import com.craftinginterpreters.lox.Stmt.CastString;
 import com.craftinginterpreters.lox.Stmt.If;
 import com.craftinginterpreters.lox.Stmt.Ternary;
-import com.craftinginterpreters.lox.Stmt.While;
 
 class Interpreter implements Expr.Visitor<Object>,
         Stmt.Visitor<Void> {
@@ -335,18 +334,7 @@ class Interpreter implements Expr.Visitor<Object>,
     @Override
     public Object visitAssignExpr(Expr.Assign expr) {
         Object value = evaluate(expr.value);
-        if (expr.name instanceof Expr.Variable) {
-            environment.assign(((Expr.Variable) (expr.name)).name, value);
-        }
-        if (expr.name instanceof Expr.Binary) {
-            boolean b = isTruthy(evaluate((Expr.Binary) expr.name));
-            if (b) {
-                Token t = ((Expr.Variable) ((Expr.Binary) (expr.name)).left).name;
-                environment.assign(t, value);
-            }
-        } else
-            throw new RuntimeError(((Expr.Binary) (expr.name)).operator,
-                    "Operator must be < or >.");
+        environment.assign(expr.name, value);
         return value;
     }
 
@@ -444,10 +432,10 @@ class Interpreter implements Expr.Visitor<Object>,
     }
 
     @Override
-    public Void visitWhileStmt(While stmt) {
-        if (isTruthy(evaluate(stmt.condition))) {
+    public Void visitWhileStmt(Stmt.While stmt) {
+        while (isTruthy(evaluate(stmt.condition))) {
             execute(stmt.body);
-        } 
+        }
         return null;
     }
 
