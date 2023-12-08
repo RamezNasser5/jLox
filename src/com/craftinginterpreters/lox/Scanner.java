@@ -31,6 +31,7 @@ class Scanner {
     keywords.put("float",  FLOAT);
     keywords.put("string",  STRING);
     keywords.put("do",  DO);
+    keywords.put("break",  BREAK);
   }
   private final String source;
   private final List<Token> tokens = new ArrayList<>();

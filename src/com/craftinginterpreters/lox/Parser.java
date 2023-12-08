@@ -76,8 +76,16 @@ class Parser {
         if (match(DO)) {
             return doStatement();
         }
+        if (match(BREAK)) {
+            return breakStatement();
+        }
         
         return expressionStatement();
+    }
+
+    private Stmt breakStatement() {
+        consume(SEMICOLON, "Expect ';' after 'break'.");
+        return new Stmt.Break();
     }
 
     private Stmt doStatement() {

@@ -15,6 +15,7 @@ abstract class Stmt {
     R visitTernaryStatement(Ternary stmt);
     R visitWhileStmt(While stmt);
     R visitDoStatement(Do stmt);
+    R visitBreakStmt(Break stmt);
   }
 
   static class Do extends Stmt {
@@ -97,6 +98,13 @@ abstract class Stmt {
     final List<Stmt> statements;
   }
 //< stmt-block
+
+static class Break extends Stmt {
+  @Override
+  <R> R accept(Visitor<R> visitor) {
+      return visitor.visitBreakStmt(this);
+  }
+}
 
 static class CastString  extends Stmt{
   CastString(Expr expression) {

@@ -347,6 +347,7 @@ class Interpreter implements Expr.Visitor<Object>,
 
     void executeStmt(List<Stmt> statements) {
         for (Stmt statement : statements) {
+
             execute(statement);
         }
     }
@@ -434,8 +435,12 @@ class Interpreter implements Expr.Visitor<Object>,
 
     @Override
     public Void visitWhileStmt(Stmt.While stmt) {
-        while (isTruthy(evaluate(stmt.condition))) {
-            execute(stmt.body);
+        try {
+            while (isTruthy(evaluate(stmt.condition))) {
+                execute(stmt.body);
+            }
+        } catch (BreakException e) {
+            // Do nothing, just exit the loop
         }
         return null;
     }
@@ -448,4 +453,12 @@ class Interpreter implements Expr.Visitor<Object>,
         return null;
     }
 
+    @Override
+    public Void visitBreakStmt(Stmt.Break stmt) {
+        throw new BreakException();
+    }
+
+}
+
+class BreakException extends RuntimeException {
 }
