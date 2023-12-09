@@ -16,7 +16,27 @@ abstract class Stmt {
     R visitWhileStmt(While stmt);
     R visitDoStatement(Do stmt);
     R visitBreakStmt(Break stmt);
+    R visitFunctionStmt(Function stmt);
   }
+
+  //> stmt-function
+  static class Function extends Stmt {
+    Function(Token name, List<Token> params, List<Stmt> body) {
+      this.name = name;
+      this.params = params;
+      this.body = body;
+    }
+
+    @Override
+    <R> R accept(Visitor<R> visitor) {
+      return visitor.visitFunctionStmt(this);
+    }
+
+    final Token name;
+    final List<Token> params;
+    final List<Stmt> body;
+  }
+//< stmt-function
 
   static class Do extends Stmt {
     Do(Expr condition, Stmt body) {
