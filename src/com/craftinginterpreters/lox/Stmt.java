@@ -11,12 +11,29 @@ abstract class Stmt {
     R visitVarStmt(Var stmt);
     R visitCastFloatStmt(CastFloat stmt);
     R visitCastStringStmt(CastString stmt);
-    R visitIfStatement(If stmt);
-    R visitTernaryStatement(Ternary stmt);
+    R visitIfStmt(If stmt);
+    R visitTernaryStmt(Ternary stmt);
     R visitWhileStmt(While stmt);
-    R visitDoStatement(Do stmt);
+    R visitDoStmt(Do stmt);
     R visitBreakStmt(Break stmt);
     R visitFunctionStmt(Function stmt);
+    R visitReturnStmt(Return stmt);
+  }
+
+  static class Return extends Stmt {
+    Return(Token keyword, Expr value) {
+      this.keyword = keyword;
+      this.value = value;
+    }
+
+    @Override
+    <R> R accept(Visitor<R> visitor) {
+      return visitor.visitReturnStmt(this);
+    }
+
+    final Token keyword;
+    final Expr value;
+    
   }
 
   //> stmt-function
@@ -46,7 +63,7 @@ abstract class Stmt {
 
     @Override
     <R> R accept(Visitor<R> visitor) {
-      return visitor.visitDoStatement(this);
+      return visitor.visitDoStmt(this);
     }
 
     final Expr condition;
@@ -78,7 +95,7 @@ abstract class Stmt {
     @Override
     <R> R accept(Visitor<R> visitor) {
         
-        return visitor.visitIfStatement(this);
+        return visitor.visitIfStmt(this);
     }
     final Expr condition;
     final Stmt thenBranch;
@@ -95,7 +112,7 @@ abstract class Stmt {
     @Override
     <R> R accept(Visitor<R> visitor) {
         
-        return visitor.visitTernaryStatement(this);
+        return visitor.visitTernaryStmt(this);
     }
     final Expr condition;
     final Stmt thenBranch;

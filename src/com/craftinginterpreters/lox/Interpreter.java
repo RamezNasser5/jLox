@@ -7,6 +7,7 @@ import com.craftinginterpreters.lox.Expr.Logical;
 import com.craftinginterpreters.lox.Stmt.CastString;
 import com.craftinginterpreters.lox.Stmt.Do;
 import com.craftinginterpreters.lox.Stmt.If;
+import com.craftinginterpreters.lox.Stmt.Return;
 import com.craftinginterpreters.lox.Stmt.Ternary;
 
 class Interpreter implements Expr.Visitor<Object>,
@@ -16,7 +17,25 @@ class Interpreter implements Expr.Visitor<Object>,
 
     private Environment environment = globals;
 
-    
+    Interpreter() {
+        globals.define("clock", new LoxCallable() {
+            @Override
+            public int arity() {
+                return 0;
+            }
+
+            @Override
+            public Object call(Interpreter interpreter,
+                    List<Object> arguments) {
+                return (double) System.currentTimeMillis() / 1000.0;
+            }
+
+            @Override
+            public String toString() {
+                return "<native fn>";
+            }
+        });
+    }
 
     void interpret(List<Stmt> statements) {
         try {
@@ -40,7 +59,7 @@ class Interpreter implements Expr.Visitor<Object>,
     }
 
     @Override
-    public Void visitIfStatement(If stmt) {
+    public Void visitIfStmt(If stmt) {
         if (isTruthy(evaluate(stmt.condition))) {
             execute(stmt.thenBranch);
         } else if (stmt.elseBranch != null) {
@@ -50,7 +69,7 @@ class Interpreter implements Expr.Visitor<Object>,
     }
 
     @Override
-    public Void visitTernaryStatement(Ternary stmt) {
+    public Void visitTernaryStmt(Ternary stmt) {
         if (isTruthy(evaluate(stmt.condition))) {
             execute(stmt.thenBranch);
         } else if (stmt.elseBranch != null) {
@@ -451,7 +470,7 @@ class Interpreter implements Expr.Visitor<Object>,
     }
 
     @Override
-    public Void visitDoStatement(Do stmt) {
+    public Void visitDoStmt(Do stmt) {
         while (isTruthy(evaluate(stmt.condition))) {
             execute(stmt.body);
         }
@@ -490,4 +509,13 @@ class Interpreter implements Expr.Visitor<Object>,
         return null;
     }
 
+    @Override
+    public Void visitReturnStmt(Return stmt) {
+        Object value = null;
+        if (stmt.value != null)
+            value = evaluate(stmt.value);
+        throw new Return1(value);
+    }
+
 }
+
