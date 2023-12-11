@@ -38,7 +38,10 @@ class Parser {
     }
 
     private Stmt function(String kind) {
-        Token name = consume(IDENTIFIER, "Expect " + kind + " name.");
+        Token name = null;
+        if (check(IDENTIFIER)) {
+            name = consume(IDENTIFIER, "Expect " + kind + " name.");
+        }
         consume(LEFT_PAREN, "Expect '(' after " + kind + " name.");
         List<Token> parameters = new ArrayList<>();
         if (!check(RIGHT_PAREN)) {
@@ -97,10 +100,17 @@ class Parser {
         if (match(BREAK))
             return breakStatement();
 
+        if (match(CONTINUE)) return continueStatement(); 
+
         if (match(RETURN))
             return returnStatement();
 
         return expressionStatement();
+    }
+
+    private Stmt continueStatement() {
+        consume(SEMICOLON, "Expect ';' after return value.");
+        return new Stmt.Continue();
     }
 
     private Stmt returnStatement() {

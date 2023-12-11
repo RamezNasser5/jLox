@@ -30,17 +30,21 @@ class Interpreter implements Expr.Visitor<Object>,
         });
         globals.define("max", new LoxCallable() {
             @Override
-            public int arity() { return 2; }
-      
+            public int arity() {
+                return 2;
+            }
+
             @Override
             public Object call(Interpreter interpreter,
-                               List<Object> arguments) {
-              return Math.max((double)arguments.get(0), (double)arguments.get(1));
+                    List<Object> arguments) {
+                return Math.max((double) arguments.get(0), (double) arguments.get(1));
             }
-      
+
             @Override
-            public String toString() { return "<native fn>"; }
-          });
+            public String toString() {
+                return "<native fn>";
+            }
+        });
     }
 
     void interpret(List<Stmt> statements) {
@@ -467,10 +471,18 @@ class Interpreter implements Expr.Visitor<Object>,
     public Void visitWhileStmt(Stmt.While stmt) {
         try {
             while (isTruthy(evaluate(stmt.condition))) {
-                execute(stmt.body);
+                try {
+                    execute(stmt.body);
+                } catch (ContinueException e) {
+                    // Continue to the next iteration
+                    continue;
+                } catch (BreakException e) {
+                    // Exit the loop
+                    break;
+                }
             }
-        } catch (BreakException e) {
-            // Do nothing, just exit the loop
+        } catch (ContinueException | BreakException e) {
+            // Ignore exceptions thrown by nested statements
         }
         return null;
     }
@@ -511,6 +523,9 @@ class Interpreter implements Expr.Visitor<Object>,
     @Override
     public Void visitFunctionStmt(Stmt.Function stmt) {
         LoxFunction function = new LoxFunction(stmt, environment);
+        if (stmt.name == null) {
+            return null;
+        }
         environment.define(stmt.name.lexeme, function);
         return null;
     }
@@ -523,5 +538,9 @@ class Interpreter implements Expr.Visitor<Object>,
         throw new Return(value);
     }
 
-}
+    @Override
+    public Void visitContinueStmt(Stmt.Continue stmt) {
+        throw new ContinueException();
+    }
 
+}

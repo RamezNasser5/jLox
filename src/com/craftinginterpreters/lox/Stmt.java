@@ -16,8 +16,17 @@ abstract class Stmt {
     R visitWhileStmt(While stmt);
     R visitDoStmt(Do stmt);
     R visitBreakStmt(Break stmt);
+    R visitContinueStmt(Continue stmt);
     R visitFunctionStmt(Function stmt);
     R visitReturnStmt(Return stmt);
+  }
+
+  static class Continue extends Stmt {
+    @Override
+  <R> R accept(Visitor<R> visitor) {
+      return visitor.visitContinueStmt(this);
+  }
+    
   }
 
   static class Return extends Stmt {
