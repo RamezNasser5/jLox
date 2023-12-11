@@ -3,13 +3,6 @@ package com.craftinginterpreters.lox;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.craftinginterpreters.lox.Expr.Logical;
-import com.craftinginterpreters.lox.Stmt.CastString;
-import com.craftinginterpreters.lox.Stmt.Do;
-import com.craftinginterpreters.lox.Stmt.If;
-import com.craftinginterpreters.lox.Stmt.Return;
-import com.craftinginterpreters.lox.Stmt.Ternary;
-
 class Interpreter implements Expr.Visitor<Object>,
         Stmt.Visitor<Void> {
 
@@ -35,6 +28,19 @@ class Interpreter implements Expr.Visitor<Object>,
                 return "<native fn>";
             }
         });
+        globals.define("max", new LoxCallable() {
+            @Override
+            public int arity() { return 2; }
+      
+            @Override
+            public Object call(Interpreter interpreter,
+                               List<Object> arguments) {
+              return Math.max((double)arguments.get(0), (double)arguments.get(1));
+            }
+      
+            @Override
+            public String toString() { return "<native fn>"; }
+          });
     }
 
     void interpret(List<Stmt> statements) {
@@ -59,7 +65,7 @@ class Interpreter implements Expr.Visitor<Object>,
     }
 
     @Override
-    public Void visitIfStmt(If stmt) {
+    public Void visitIfStmt(Stmt.If stmt) {
         if (isTruthy(evaluate(stmt.condition))) {
             execute(stmt.thenBranch);
         } else if (stmt.elseBranch != null) {
@@ -69,7 +75,7 @@ class Interpreter implements Expr.Visitor<Object>,
     }
 
     @Override
-    public Void visitTernaryStmt(Ternary stmt) {
+    public Void visitTernaryStmt(Stmt.Ternary stmt) {
         if (isTruthy(evaluate(stmt.condition))) {
             execute(stmt.thenBranch);
         } else if (stmt.elseBranch != null) {
@@ -86,7 +92,7 @@ class Interpreter implements Expr.Visitor<Object>,
     }
 
     @Override
-    public Void visitCastStringStmt(CastString stmt) {
+    public Void visitCastStringStmt(Stmt.CastString stmt) {
         Object value = evaluate(stmt.expression);
         Token name = ((Expr.Variable) (stmt.expression)).name;
         String stringObject = "";
@@ -445,7 +451,7 @@ class Interpreter implements Expr.Visitor<Object>,
     }
 
     @Override
-    public Object visitLogicalExpr(Logical expr) {
+    public Object visitLogicalExpr(Expr.Logical expr) {
         Object left = evaluate(expr.left);
         if (expr.operator.type == TokenType.OR) {
             if (isTruthy(left))
@@ -470,7 +476,7 @@ class Interpreter implements Expr.Visitor<Object>,
     }
 
     @Override
-    public Void visitDoStmt(Do stmt) {
+    public Void visitDoStmt(Stmt.Do stmt) {
         while (isTruthy(evaluate(stmt.condition))) {
             execute(stmt.body);
         }
@@ -510,11 +516,11 @@ class Interpreter implements Expr.Visitor<Object>,
     }
 
     @Override
-    public Void visitReturnStmt(Return stmt) {
+    public Void visitReturnStmt(Stmt.Return stmt) {
         Object value = null;
         if (stmt.value != null)
             value = evaluate(stmt.value);
-        throw new Return1(value);
+        throw new Return(value);
     }
 
 }
